@@ -9,10 +9,7 @@ class OAuth {
   }
 
   public getRedirectURL(): string {
-    return (new URL(
-      `oauth/${this.provider}/redirect`,
-      this.baseUrl,
-    )).toString();
+    return new URL(`oauth/${this.provider}/redirect`, this.baseUrl).toString();
   }
 }
 
