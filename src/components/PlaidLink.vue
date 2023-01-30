@@ -11,7 +11,9 @@ export default defineComponent({
   name: 'PlaidLink',
   props: {},
   async setup() {
-    const response = await fetch('http://localhost:3333/link/token');
+    const response = await fetch('http://localhost:3333/link/token', {
+      credentials: 'include',
+    });
     const body = await response.json();
 
     const handler = window.Plaid.create({
@@ -34,7 +36,6 @@ export default defineComponent({
     });
 
     handler.open();
-
     return {
       body,
     };
