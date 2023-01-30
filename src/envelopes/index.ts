@@ -49,21 +49,57 @@ class Health {
   }
 }
 
+class User {
+  protected baseUrl: string;
+
+  private resourceUrl = 'user';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async isLoggedIn(): Promise<boolean> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/logged-in`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status === 401) {
+      return false;
+    }
+
+    return Boolean(response.json());
+  }
+}
+
 export default class Envelopes {
   protected baseUrl: string;
 
   protected oauthService: OAuth | undefined;
+
+  protected userService: User | undefined;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
   public oauth(provider: string) {
-    this.oauthService = new OAuth(provider, this.baseUrl);
+    if (this.oauthService === undefined) {
+      this.oauthService = new OAuth(provider, this.baseUrl);
+    }
     return this.oauthService;
   }
 
   public health() {
     return Health.check(this.baseUrl);
+  }
+
+  public user() {
+    if (this.userService === undefined) {
+      this.userService = new User(this.baseUrl);
+    }
+    return this.userService;
   }
 }

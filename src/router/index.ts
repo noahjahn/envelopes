@@ -5,9 +5,8 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-
 import routes from './routes';
-
+import envelopes from 'src/envelopes';
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -35,6 +34,30 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach(async (to, from, next) => {
+    try {
+      await envelopes.health();
+      if (await envelopes.user().isLoggedIn()) {
+        if (to.fullPath === '/login') {
+          next({
+            path: '/',
+          });
+          return;
+        }
+        next();
+        return;
+      }
+
+      if (to.fullPath !== '/login') {
+        next({
+          path: '/login',
+        });
+        return;
+      }
+      next();
+    } catch (error) {}
   });
 
   return Router;
