@@ -72,6 +72,15 @@ class User {
 
     return Boolean(response.json());
   }
+
+  public async logout(): Promise<Response> {
+    return fetch(
+      new URL(`${this.resourceUrl}/logout`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+  }
 }
 
 export default class Envelopes {

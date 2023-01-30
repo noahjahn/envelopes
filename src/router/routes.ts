@@ -1,4 +1,5 @@
 import { RouteRecordRaw } from 'vue-router';
+import envelopes from 'src/envelopes';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -10,6 +11,23 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Login.vue') }],
+  },
+  {
+    path: '/logout',
+    name: 'logout',
+    component: {
+      async beforeRouteEnter(to, from, next) {
+        try {
+          await envelopes.user().logout();
+        } catch (error) {
+          // TODO: log error
+        } finally {
+          next({
+            path: '/login',
+          });
+        }
+      },
+    },
   },
 
   // Always leave this as last one,

@@ -13,7 +13,26 @@
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn icon="account_circle" flat>
+          <q-menu>
+            <q-list style="min-width: 200px">
+              <q-item>
+                <q-item-section>John Doe</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup>
+                <q-item-section>Setting1</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>Settings2</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup to="logout">
+                <q-item-section>Logout</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
