@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+    <q-header>
+      <q-toolbar flat class="bg-grey-10">
         <q-btn
           flat
           dense
@@ -11,23 +11,35 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Envelopes </q-toolbar-title>
 
-        <q-btn icon="account_circle" flat>
+        <q-btn icon="account_circle" flat round>
           <q-menu>
             <q-list style="min-width: 200px">
               <q-item>
+                <q-item-section avatar>
+                  <q-avatar color="secondary"> J </q-avatar>
+                </q-item-section>
                 <q-item-section>John Doe</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable v-close-popup>
-                <q-item-section>Setting1</q-item-section>
+                <q-item-section avatar>
+                  <q-avatar icon="account_circle"> </q-avatar>
+                </q-item-section>
+                <q-item-section>Profile</q-item-section>
               </q-item>
               <q-item clickable v-close-popup>
-                <q-item-section>Settings2</q-item-section>
+                <q-item-section avatar>
+                  <q-avatar icon="settings"> </q-avatar>
+                </q-item-section>
+                <q-item-section>Settings </q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable v-close-popup to="logout">
+                <q-item-section avatar>
+                  <q-avatar icon="logout"> </q-avatar>
+                </q-item-section>
                 <q-item-section>Logout</q-item-section>
               </q-item>
             </q-list>
