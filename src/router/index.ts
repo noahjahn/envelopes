@@ -39,7 +39,7 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach(async (to, from, next) => {
     try {
       await envelopes.health();
-      if (await envelopes.user().isLoggedIn()) {
+      if (await envelopes.auth().isLoggedIn()) {
         if (to.fullPath === '/login') {
           next({
             path: '/',

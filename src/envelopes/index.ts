@@ -49,10 +49,10 @@ class Health {
   }
 }
 
-class User {
+class Auth {
   protected baseUrl: string;
 
-  private resourceUrl = 'user';
+  private resourceUrl = 'auth';
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -88,7 +88,7 @@ export default class Envelopes {
 
   protected oauthService: OAuth | undefined;
 
-  protected userService: User | undefined;
+  protected authService: Auth | undefined;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -105,10 +105,10 @@ export default class Envelopes {
     return Health.check(this.baseUrl);
   }
 
-  public user() {
-    if (this.userService === undefined) {
-      this.userService = new User(this.baseUrl);
+  public auth() {
+    if (this.authService === undefined) {
+      this.authService = new Auth(this.baseUrl);
     }
-    return this.userService;
+    return this.authService;
   }
 }
