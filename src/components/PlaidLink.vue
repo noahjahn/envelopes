@@ -1,23 +1,20 @@
 <!-- eslint-disable @typescript-eslint/no-empty-function -->
 <template>
   <div>Plaid Link</div>
-  {{ body }}
+  {{ plaidTokenBody }}
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import envelopes from 'src/envelopes';
 
 export default defineComponent({
   name: 'PlaidLink',
-  props: {},
   async setup() {
-    const response = await fetch('http://localhost:3333/link/token', {
-      credentials: 'include',
-    });
-    const body = await response.json();
+    const plaidTokenBody = await envelopes.plaid().linkToken();
 
     const handler = window.Plaid.create({
-      token: body.link_token,
+      token: plaidTokenBody.link_token,
       onSuccess: (public_token, metadata) => {
         console.log(public_token);
         console.log(metadata);
@@ -37,7 +34,7 @@ export default defineComponent({
 
     handler.open();
     return {
-      body,
+      plaidTokenBody,
     };
   },
 });

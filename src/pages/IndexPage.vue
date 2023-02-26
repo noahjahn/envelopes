@@ -1,17 +1,12 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <plaid-link></plaid-link>
-  </q-page>
+  <q-page class="row items-center"> $1,000.00 </q-page>
 </template>
 
 <script lang="ts">
-import PlaidLink from 'components/PlaidLink.vue';
-
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'IndexPage',
-  components: { PlaidLink },
   setup() {
     return {};
   },

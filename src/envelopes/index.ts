@@ -83,12 +83,45 @@ class Auth {
   }
 }
 
+
+type PlaidLinkTokenBody = {
+  expiration: string;
+  link_token: string;
+  request_id: string;
+};
+
+class Plaid {
+  protected baseUrl: string;
+
+  private resourceUrl = 'plaid';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async linkToken(): Promise<PlaidLinkTokenBody> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/link/token`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred fetching profile info');
+    }
+    return response.json();
+  }
+}
+
 export default class Envelopes {
   protected baseUrl: string;
 
   protected oauthService: OAuth | undefined;
 
   protected authService: Auth | undefined;
+
+  protected plaidService: Plaid | undefined;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -110,5 +143,12 @@ export default class Envelopes {
       this.authService = new Auth(this.baseUrl);
     }
     return this.authService;
+  }
+
+  public plaid() {
+    if (this.plaidService === undefined) {
+      this.plaidService = new Plaid(this.baseUrl);
+    }
+    return this.plaidService;
   }
 }
