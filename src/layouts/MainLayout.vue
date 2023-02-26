@@ -73,9 +73,9 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import EssentialLink from 'components/EssentialLink.vue';
-import envelopes from 'src/envelopes';
-import * as gravatar from 'gravatar';
+import { useProfileStore } from 'stores/profile';
 
 const linksList = [
   {
@@ -132,22 +132,9 @@ export default defineComponent({
   setup() {
     const leftDrawerOpen = ref(false);
 
-    const name = ref('');
-    const avatarUrl = ref('');
-    const hasGravatar = ref(false);
-    envelopes
-      .profile()
-      .me()
-      .then(async (profile) => {
-        avatarUrl.value = gravatar.url(profile.email, {
-          protocol: 'https',
-          default: '404',
-        });
-        if ((await fetch(avatarUrl.value)).status !== 404) {
-          hasGravatar.value = true;
-        }
-        name.value = profile.name;
-      });
+    const profile = useProfileStore();
+    profile.update();
+    const { name, avatarUrl, hasGravatar } = storeToRefs(profile);
 
     return {
       essentialLinks: linksList,
