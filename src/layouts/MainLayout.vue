@@ -26,7 +26,7 @@
                 <q-item-section>{{ name }}</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup :to="{ name: 'profile' }">
                 <q-item-section avatar>
                   <q-avatar icon="account_circle"> </q-avatar>
                 </q-item-section>
