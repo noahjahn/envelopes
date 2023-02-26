@@ -7,13 +7,10 @@
 <script lang="ts">
 import PlaidLink from 'components/PlaidLink.vue';
 
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'IndexPage',
+  name: 'SettingsPage',
   components: { PlaidLink },
-  setup() {
-    return {};
-  },
 });
 </script>

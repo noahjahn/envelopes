@@ -1,7 +1,10 @@
 <!-- eslint-disable @typescript-eslint/no-empty-function -->
 <template>
-  <div>Plaid Link</div>
-  {{ plaidTokenBody }}
+  <q-btn
+    color="primary"
+    label="Link new bank account"
+    @click="beginPlaidLink"
+  />
 </template>
 
 <script lang="ts">
@@ -13,10 +16,10 @@ export default defineComponent({
   async setup() {
     const plaidTokenBody = await envelopes.plaid().linkToken();
 
-    const handler = window.Plaid.create({
+    const plaidHandler = window.Plaid.create({
       token: plaidTokenBody.link_token,
-      onSuccess: (public_token, metadata) => {
-        console.log(public_token);
+      onSuccess: (publicToken, metadata) => {
+        console.log(publicToken);
         console.log(metadata);
       },
       onLoad: () => {
@@ -32,8 +35,10 @@ export default defineComponent({
       },
     });
 
-    handler.open();
     return {
+      beginPlaidLink: () => {
+        plaidHandler.open();
+      },
       plaidTokenBody,
     };
   },
