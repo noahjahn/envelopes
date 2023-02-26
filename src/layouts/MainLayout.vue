@@ -18,9 +18,12 @@
             <q-list style="min-width: 200px">
               <q-item>
                 <q-item-section avatar>
-                  <q-avatar color="secondary"> J </q-avatar>
+                  <q-avatar color="secondary">
+                    <img v-if="hasGravatar" :src="avatarUrl" />
+                    {{ name.substring(0, 1) }}
+                  </q-avatar>
                 </q-item-section>
-                <q-item-section>John Doe</q-item-section>
+                <q-item-section>{{ name }}</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable v-close-popup>
@@ -48,7 +51,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" bordered>
       <q-list>
         <q-item-label header> Essential Links </q-item-label>
 
@@ -71,6 +74,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
+import envelopes from 'src/envelopes';
+import * as gravatar from 'gravatar';
 
 const linksList = [
   {
@@ -127,12 +132,32 @@ export default defineComponent({
   setup() {
     const leftDrawerOpen = ref(false);
 
+    const name = ref('');
+    const avatarUrl = ref('');
+    const hasGravatar = ref(false);
+    envelopes
+      .profile()
+      .me()
+      .then(async (profile) => {
+        avatarUrl.value = gravatar.url(profile.email, {
+          protocol: 'https',
+          default: '404',
+        });
+        if ((await fetch(avatarUrl.value)).status !== 404) {
+          hasGravatar.value = true;
+        }
+        name.value = profile.name;
+      });
+
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
+      name,
+      avatarUrl,
+      hasGravatar,
     };
   },
 });

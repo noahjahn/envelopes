@@ -83,6 +83,38 @@ class Auth {
   }
 }
 
+type ProfileMeBody = {
+  uuid: string;
+  email: string;
+  name: string;
+  access_token: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+class Profile {
+  protected baseUrl: string;
+
+  private resourceUrl = 'profile';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async me(): Promise<ProfileMeBody> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/me`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred fetching profile info');
+    }
+    return response.json();
+  }
+}
 
 type PlaidLinkTokenBody = {
   expiration: string;
@@ -121,6 +153,8 @@ export default class Envelopes {
 
   protected authService: Auth | undefined;
 
+  protected profileService: Profile | undefined;
+
   protected plaidService: Plaid | undefined;
 
   constructor(baseUrl: string) {
@@ -146,6 +180,13 @@ export default class Envelopes {
       this.authService = new Auth(this.baseUrl);
     }
     return this.authService;
+  }
+
+  public profile() {
+    if (this.profileService === undefined) {
+      this.profileService = new Profile(this.baseUrl);
+    }
+    return this.profileService;
   }
 
   public plaid() {
