@@ -57,7 +57,12 @@ export default route(function (/* { store, ssrContext } */) {
         return;
       }
       next();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      next({
+        path: '/login',
+      });
+    }
   });
 
   return Router;

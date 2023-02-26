@@ -66,7 +66,7 @@ class Auth {
       },
     );
 
-    if (response.status === 401) {
+    if (response.status !== 200) {
       return false;
     }
 
@@ -124,6 +124,9 @@ export default class Envelopes {
   protected plaidService: Plaid | undefined;
 
   constructor(baseUrl: string) {
+    if (baseUrl === '') {
+      throw new Error('baseUrl is required to have a value');
+    }
     this.baseUrl = baseUrl;
   }
 
