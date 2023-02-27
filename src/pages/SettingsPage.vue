@@ -1,10 +1,21 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <q-item v-for="bank in banks" :key="bank.uuid">
-      {{ bank.name ? bank.name : 'Bank has no friendly name' }}
-    </q-item>
-
-    <plaid-link></plaid-link>
+  <q-page padding>
+    <div class="col">
+      <q-item class="row" v-for="bank in banks" :key="bank.uuid">
+        <q-input
+          v-model="bankNames[bank.uuid]"
+          placeholder="Bank has no friendly name"
+        ></q-input>
+        <q-btn
+          rounded
+          icon="save"
+          @click="($event) => updateBankName($event, bank.uuid)"
+        />
+      </q-item>
+      <div class="row">
+        <plaid-link />
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -13,22 +24,39 @@ import PlaidLink from 'components/PlaidLink.vue';
 import { defineComponent, ref } from 'vue';
 import envelopes from 'src/envelopes';
 
-interface IBank {
-  uuid: string;
-  name: string;
-}
-
 export default defineComponent({
   name: 'SettingsPage',
   components: { PlaidLink },
   async setup() {
     // INFO: This is an interesting typing scenario
-    const banks = ref<Array<IBank>>([]);
+    const banks = ref<
+      Array<{
+        uuid: string;
+        name: string;
+      }>
+    >([]);
 
-    banks.value = await envelopes.banks().list();
+    const bankNames = ref<{
+      [key: string]: string;
+    }>({});
+
+    async function listBanks() {
+      banks.value = await envelopes.banks().list();
+      banks.value.forEach((bank) => {
+        bankNames.value[bank.uuid] = bank.name;
+      });
+    }
+
+    await listBanks();
 
     return {
       banks,
+      bankNames,
+      updateBankName: async ($event: Event, bankUuid: string) => {
+        await envelopes.banks().update(bankUuid, {
+          name: bankNames.value[bankUuid],
+        });
+      },
     };
   },
 });

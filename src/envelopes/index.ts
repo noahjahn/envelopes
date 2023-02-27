@@ -173,8 +173,12 @@ class Plaid {
   }
 }
 
-export type BanksListBody = {
+export type Bank = {
   uuid: string;
+  name: string;
+};
+
+export type BankWithoutUuid = {
   name: string;
 };
 
@@ -187,7 +191,7 @@ class Banks {
     this.baseUrl = baseUrl;
   }
 
-  public async list(): Promise<Array<BanksListBody>> {
+  public async list(): Promise<Array<Bank>> {
     const response: Response = await fetch(
       new URL(`${this.resourceUrl}`, this.baseUrl).toString(),
       {
@@ -197,6 +201,28 @@ class Banks {
 
     if (response.status !== 200) {
       throw new Error('An error occurred listing banks');
+    }
+    return response.json();
+  }
+
+  public async update(
+    uuid: string,
+    bank: Bank | BankWithoutUuid,
+  ): Promise<Bank> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/${uuid}`, this.baseUrl).toString(),
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bank),
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred updating bank');
     }
     return response.json();
   }
