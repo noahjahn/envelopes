@@ -173,6 +173,35 @@ class Plaid {
   }
 }
 
+export type BanksListBody = {
+  uuid: string;
+  name: string;
+};
+
+class Banks {
+  protected baseUrl: string;
+
+  private resourceUrl = 'banks';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async list(): Promise<Array<BanksListBody>> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred listing banks');
+    }
+    return response.json();
+  }
+}
+
 export default class Envelopes {
   protected baseUrl: string;
 
@@ -183,6 +212,8 @@ export default class Envelopes {
   protected profileService: Profile | undefined;
 
   protected plaidService: Plaid | undefined;
+
+  protected banksService: Banks | undefined;
 
   constructor(baseUrl: string) {
     if (baseUrl === '') {
@@ -221,5 +252,12 @@ export default class Envelopes {
       this.plaidService = new Plaid(this.baseUrl);
     }
     return this.plaidService;
+  }
+
+  public banks() {
+    if (this.banksService === undefined) {
+      this.banksService = new Banks(this.baseUrl);
+    }
+    return this.banksService;
   }
 }
