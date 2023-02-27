@@ -122,6 +122,10 @@ type PlaidLinkTokenBody = {
   request_id: string;
 };
 
+type PlaidItemAccessTokenRequestBody = {
+  publicToken: string;
+};
+
 class Plaid {
   protected baseUrl: string;
 
@@ -143,6 +147,29 @@ class Plaid {
       throw new Error('An error occurred fetching profile info');
     }
     return response.json();
+  }
+
+  public async createItemAccessToken(publicToken: string): Promise<boolean> {
+    const plaidItemAccessTokenRequestBody: PlaidItemAccessTokenRequestBody = {
+      publicToken,
+    };
+
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/item/access-token`, this.baseUrl).toString(),
+      {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(plaidItemAccessTokenRequestBody),
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error('An error occurred creating the item access token');
+    }
+    return true;
   }
 }
 

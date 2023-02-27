@@ -18,8 +18,8 @@ export default defineComponent({
 
     const plaidHandler = window.Plaid.create({
       token: plaidTokenBody.link_token,
-      onSuccess: (publicToken, metadata) => {
-        console.log(publicToken);
+      onSuccess: async (publicToken: string, metadata) => {
+        await envelopes.plaid().createItemAccessToken(publicToken);
         console.log(metadata);
       },
       onLoad: () => {
