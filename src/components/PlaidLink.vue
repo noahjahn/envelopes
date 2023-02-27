@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-empty-function -->
 <template>
   <q-btn
     color="primary"
