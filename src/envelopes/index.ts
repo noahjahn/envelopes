@@ -226,6 +226,21 @@ class Banks {
     }
     return response.json();
   }
+
+  public async delete(uuid: string): Promise<boolean> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/${uuid}`, this.baseUrl).toString(),
+      {
+        method: 'DELETE',
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred deleting bank');
+    }
+    return true;
+  }
 }
 
 export default class Envelopes {

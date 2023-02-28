@@ -11,6 +11,11 @@
           icon="save"
           @click="($event) => updateBankName($event, bank.uuid)"
         />
+        <q-btn
+          rounded
+          icon="delete"
+          @click="($event) => deleteBank($event, bank.uuid)"
+        />
       </q-item>
       <div class="row">
         <plaid-link />
@@ -56,6 +61,10 @@ export default defineComponent({
         await envelopes.banks().update(bankUuid, {
           name: bankNames.value[bankUuid],
         });
+      },
+      deleteBank: async ($event: Event, bankUuid: string) => {
+        await envelopes.banks().delete(bankUuid);
+        await listBanks();
       },
     };
   },
