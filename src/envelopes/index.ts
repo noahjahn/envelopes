@@ -289,6 +289,35 @@ class Banks {
   }
 }
 
+export type BalanceGet = {
+  current: number;
+  available: number;
+};
+
+class Balance {
+  protected baseUrl: string;
+
+  private resourceUrl = 'balance';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async get(): Promise<BalanceGet> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred getting balance');
+    }
+    return response.json();
+  }
+}
+
 export default class Envelopes {
   protected baseUrl: string;
 
@@ -301,6 +330,8 @@ export default class Envelopes {
   protected plaidService: Plaid | undefined;
 
   protected banksService: Banks | undefined;
+
+  protected balanceService: Balance | undefined;
 
   constructor(baseUrl: string) {
     if (baseUrl === '') {
@@ -346,5 +377,12 @@ export default class Envelopes {
       this.banksService = new Banks(this.baseUrl);
     }
     return this.banksService;
+  }
+
+  public balance() {
+    if (this.balanceService === undefined) {
+      this.balanceService = new Balance(this.baseUrl);
+    }
+    return this.balanceService;
   }
 }

@@ -1,14 +1,22 @@
 <template>
-  <q-page class="row items-center"> $1,000.00 </q-page>
+  <q-page class="row items-center"> ${{ balance }} </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, Ref, ref } from 'vue';
+
+import envelopes from 'src/envelopes';
 
 export default defineComponent({
   name: 'IndexPage',
-  setup() {
-    return {};
+  async setup() {
+    const balance: Ref<number> = ref(0);
+
+    balance.value = (await envelopes.balance().get()).current;
+
+    return {
+      balance,
+    };
   },
 });
 </script>
