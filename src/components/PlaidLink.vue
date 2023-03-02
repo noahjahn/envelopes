@@ -12,14 +12,16 @@ import envelopes from 'src/envelopes';
 
 export default defineComponent({
   name: 'PlaidLink',
-  async setup() {
+  emits: ['plaid-link-success'],
+
+  async setup(props, ctx) {
     const plaidTokenBody = await envelopes.plaid().linkToken();
 
     const plaidHandler = window.Plaid.create({
       token: plaidTokenBody.link_token,
       onSuccess: async (publicToken: string, metadata) => {
         await envelopes.plaid().createItemAccessToken(publicToken);
-        console.log(metadata);
+        ctx.emit('plaid-link-success');
       },
       onLoad: () => {
         console.log('load');

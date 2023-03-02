@@ -18,7 +18,7 @@
         />
       </q-item>
       <div class="row">
-        <plaid-link />
+        <plaid-link @plaid-link-success="listBanks" />
       </div>
     </div>
   </q-page>
@@ -66,6 +66,7 @@ export default defineComponent({
         await envelopes.banks().delete(bankUuid);
         await listBanks();
       },
+      listBanks,
     };
   },
 });
