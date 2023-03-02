@@ -7,6 +7,14 @@
           placeholder="Bank has no friendly name"
         ></q-input>
         <q-btn
+          v-if="bank.updateRequired"
+          rounded
+          icon="warning"
+          text-color="warning"
+        >
+          <q-tooltip>{{ bank.updateRequiredReason }}</q-tooltip>
+        </q-btn>
+        <q-btn
           rounded
           icon="save"
           @click="($event) => updateBankName($event, bank.uuid)"
@@ -38,6 +46,8 @@ export default defineComponent({
       Array<{
         uuid: string;
         name: string;
+        updateRequired: boolean;
+        updateRequiredReason: string | null;
       }>
     >([]);
 

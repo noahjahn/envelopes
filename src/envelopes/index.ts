@@ -175,6 +175,8 @@ class Plaid {
 export type Bank = {
   uuid: string;
   name: string;
+  updateRequired: boolean;
+  updateRequiredReason: string | null;
 };
 
 export type BankWithoutUuid = {
