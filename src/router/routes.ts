@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'dashboard',
         component: () => import('pages/IndexPage.vue'),
       },
       {
