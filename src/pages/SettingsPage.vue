@@ -11,6 +11,7 @@
           rounded
           icon="warning"
           text-color="warning"
+          @click="($event) => updatePlaidItem($event, bank.uuid)"
         >
           <q-tooltip>{{ bank.updateRequiredReason }}</q-tooltip>
         </q-btn>
@@ -67,6 +68,35 @@ export default defineComponent({
     return {
       banks,
       bankNames,
+      updatePlaidItem: async ($event: Event, bankUuid: string) => {
+        const plaidTokenBody = await envelopes
+          .plaid()
+          .updateItemAccessToken(bankUuid);
+        const plaidHandler = window.Plaid.create({
+          token: plaidTokenBody.link_token,
+          onSuccess: async (publicToken: string, metadata) => {
+            await listBanks();
+            await envelopes.plaid().resolveUpdateRequired(bankUuid);
+            await listBanks();
+          },
+          onExit: (err, metadata) => {
+            // The user exited the Link flow.
+
+            if (err != null) {
+              // TODO: Handle this error.
+              // The user encountered a Plaid API error prior
+              // to exiting.
+            }
+
+            // metadata contains the most recent API request ID and the
+
+            // Link session ID. Storing this information is helpful
+
+            // for support.
+          },
+        });
+        plaidHandler.open();
+      },
       updateBankName: async ($event: Event, bankUuid: string) => {
         await envelopes.banks().update(bankUuid, {
           name: bankNames.value[bankUuid],

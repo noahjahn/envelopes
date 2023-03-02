@@ -145,7 +145,7 @@ class Plaid {
     );
 
     if (response.status !== 200) {
-      throw new Error('An error occurred fetching profile info');
+      throw new Error('An error occurred fetching plaid link token');
     }
     return response.json();
   }
@@ -167,6 +167,51 @@ class Plaid {
 
     if (response.status !== 201) {
       throw new Error('An error occurred creating the item access token');
+    }
+    return true;
+  }
+
+  public async updateItemAccessToken(
+    uuid: string,
+  ): Promise<PlaidLinkTokenBody> {
+    const response: Response = await fetch(
+      new URL(
+        `${this.resourceUrl}/item/access-token/${uuid}`,
+        this.baseUrl,
+      ).toString(),
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred updating the item access token');
+    }
+    return response.json();
+  }
+
+  public async resolveUpdateRequired(uuid: string): Promise<boolean> {
+    const response: Response = await fetch(
+      new URL(
+        `${this.resourceUrl}/item/access-token/resolve/${uuid}`,
+        this.baseUrl,
+      ).toString(),
+      {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error(
+        'An error occurred resolving the item access token update',
+      );
     }
     return true;
   }
