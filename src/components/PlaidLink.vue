@@ -20,7 +20,10 @@ export default defineComponent({
     const plaidHandler = window.Plaid.create({
       token: plaidTokenBody.link_token,
       onSuccess: async (publicToken: string, metadata) => {
-        await envelopes.plaid().createItemAccessToken(publicToken);
+        await envelopes.plaid().createItemAccessToken({
+          publicToken,
+          bankName: metadata.institution?.name,
+        });
         ctx.emit('plaid-link-success');
       },
       onLoad: () => {

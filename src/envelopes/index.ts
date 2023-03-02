@@ -124,6 +124,7 @@ type PlaidLinkTokenBody = {
 
 type PlaidItemAccessTokenRequestBody = {
   publicToken: string;
+  bankName: string;
 };
 
 class Plaid {
@@ -149,11 +150,9 @@ class Plaid {
     return response.json();
   }
 
-  public async createItemAccessToken(publicToken: string): Promise<boolean> {
-    const plaidItemAccessTokenRequestBody: PlaidItemAccessTokenRequestBody = {
-      publicToken,
-    };
-
+  public async createItemAccessToken(
+    plaidItemAccessTokenRequestBody: PlaidItemAccessTokenRequestBody,
+  ): Promise<boolean> {
     const response: Response = await fetch(
       new URL(`${this.resourceUrl}/item/access-token`, this.baseUrl).toString(),
       {
