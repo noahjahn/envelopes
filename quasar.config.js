@@ -92,6 +92,9 @@ module.exports = configure(function (/* ctx */) {
     framework: {
       config: {
         dark: true,
+        loading: {
+          delay: 400,
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -105,7 +108,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Cookies', 'Notify'],
+      plugins: ['Cookies', 'Notify', 'Loading'],
     },
 
     // animations: 'all', // --- includes all animations

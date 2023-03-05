@@ -36,16 +36,29 @@ type HealthBody = {
   };
 };
 
+export class HealthCheckError extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    if (!message) {
+      message = 'An error occurred checking the health of the envelopes server';
+    }
+    super(message, options);
+  }
+}
+
 class Health {
   public static async check(baseUrl: string): Promise<HealthBody> {
-    const response: Response = await fetch(
-      new URL('health', baseUrl).toString(),
-      {
-        credentials: 'include',
-      },
-    );
+    try {
+      const response: Response = await fetch(
+        new URL('health', baseUrl).toString(),
+        {
+          credentials: 'include',
+        },
+      );
 
-    return response.json();
+      return response.json();
+    } catch {
+      throw new HealthCheckError();
+    }
   }
 }
 
@@ -405,7 +418,7 @@ class Balance {
 }
 
 export default class Envelopes {
-  protected baseUrl: string;
+  public baseUrl: string;
 
   protected oauthService: OAuth | undefined;
 

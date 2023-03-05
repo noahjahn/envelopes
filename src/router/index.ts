@@ -7,6 +7,8 @@ import {
 } from 'vue-router';
 import routes from './routes';
 import envelopes from 'src/envelopes';
+import { HealthCheckError } from 'src/envelopes/index';
+import { Loading, Notify } from 'quasar';
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -38,6 +40,9 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach(async (to, from, next) => {
     try {
+      Loading.show({
+        message: 'This is taking longer than expected...',
+      });
       await envelopes.health();
       if (await envelopes.auth().isLoggedIn()) {
         if (to.fullPath === '/login') {
@@ -59,9 +64,19 @@ export default route(function (/* { store, ssrContext } */) {
       next();
     } catch (error) {
       console.error(error);
-      next({
-        path: '/login',
-      });
+      if (error instanceof HealthCheckError) {
+        Notify.create({
+          type: 'negative',
+          message: `${error.message}. Please check the app configuration and ensure the server is reachable at ${envelopes.baseUrl}`,
+          timeout: 0,
+        });
+      } else {
+        next({
+          path: '/login',
+        });
+      }
+    } finally {
+      Loading.hide();
     }
   });
 
