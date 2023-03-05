@@ -289,6 +289,92 @@ class Banks {
   }
 }
 
+// INFO uuid? means uuid is optional
+export type Envelope = {
+  uuid?: string;
+  name: string;
+  planned: number;
+  starting: number;
+  actual: number;
+};
+
+class EnvelopesService {
+  protected baseUrl: string;
+
+  private resourceUrl = 'envelopes';
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  public async list(): Promise<Array<Envelope>> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}`, this.baseUrl).toString(),
+      {
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred listing envelopes');
+    }
+    return response.json();
+  }
+
+  public async create(envelope: Envelope): Promise<Envelope> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}`, this.baseUrl).toString(),
+      {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(envelope),
+      },
+    );
+
+    if (response.status !== 201) {
+      throw new Error('An error occurred creating the envelope');
+    }
+    return response.json();
+  }
+
+  public async update(uuid: string, envelope: Envelope): Promise<Envelope> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/${uuid}`, this.baseUrl).toString(),
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(envelope),
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred updating the envelope');
+    }
+    return response.json();
+  }
+
+  public async delete(uuid: string): Promise<boolean> {
+    const response: Response = await fetch(
+      new URL(`${this.resourceUrl}/${uuid}`, this.baseUrl).toString(),
+      {
+        method: 'DELETE',
+        credentials: 'include',
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('An error occurred deleting envelope');
+    }
+    return true;
+  }
+}
+
 export type BalanceGet = {
   current: number;
   available: number;
@@ -332,6 +418,8 @@ export default class Envelopes {
   protected banksService: Banks | undefined;
 
   protected balanceService: Balance | undefined;
+
+  protected envelopesService: EnvelopesService | undefined;
 
   constructor(baseUrl: string) {
     if (baseUrl === '') {
@@ -384,5 +472,12 @@ export default class Envelopes {
       this.balanceService = new Balance(this.baseUrl);
     }
     return this.balanceService;
+  }
+
+  public envelopes() {
+    if (this.envelopesService === undefined) {
+      this.envelopesService = new EnvelopesService(this.baseUrl);
+    }
+    return this.envelopesService;
   }
 }

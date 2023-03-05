@@ -86,10 +86,10 @@ const essentialLinks = [
     },
   },
   {
-    title: 'Settings',
-    icon: 'settings',
+    title: 'Envelopes',
+    icon: 'mail',
     to: {
-      name: 'settings',
+      name: 'envelopes',
     },
   },
 ];
