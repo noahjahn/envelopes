@@ -1,16 +1,22 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
+      <div class="q-my-md">
+        <q-btn label="Add new envelope" color="primary" @click="addEnvelope" />
+      </div>
       <q-table
         class="my-sticky-dynamic"
+        hide-bottom
+        style="background-color: var(--q-dark-page); border-radius: 10px"
         ref="envelopesTable"
-        title="Envelopes"
         :rows="rows"
         :columns="columns"
         row-key="name"
         binary-state-sort
         v-model:pagination="pagination"
         virtual-scroll
+        dense
+        flat
       >
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -90,14 +96,6 @@
             </q-td>
           </q-tr>
         </template>
-        <template v-slot:top>
-          <q-btn
-            label="Add new envelope"
-            color="primary"
-            @click="addEnvelope"
-          />
-        </template>
-        <template v-slot:bottom> </template>
       </q-table>
     </div>
   </q-page>
@@ -119,6 +117,13 @@ function formatCurrency(amount: number | string) {
   }
   return `${amount.toFixed(2)}`;
 }
+const headerClasses = 'bg-dark';
+const headerStyle = `
+font-size: 0.875rem;
+font-weight: 600;
+line-height: 2.5rem;
+letter-spacing: 0.00735em;
+`;
 
 // INFO: interestingly, this type definition is required, other was type script complains where it's used in the table
 const columns: QTableProps['columns'] = [
@@ -130,24 +135,32 @@ const columns: QTableProps['columns'] = [
     field: 'name',
     sortable: true,
     sortOrder: 'ad',
+    headerClasses,
+    headerStyle,
   },
   {
     name: 'planned',
     align: 'right',
     label: 'Planned',
     field: 'planned',
+    headerClasses,
+    headerStyle,
   },
   {
     name: 'starting',
     align: 'right',
     label: 'Starting',
     field: 'starting',
+    headerClasses,
+    headerStyle,
   },
   {
     name: 'actual',
     align: 'right',
     label: 'Actual',
     field: 'actual',
+    headerClasses,
+    headerStyle,
   },
   {
     // INFO: omitting field here, since we're custom rendering the table body. https://stackoverflow.com/a/75623507/15308357
@@ -156,12 +169,16 @@ const columns: QTableProps['columns'] = [
     label: 'Difference',
     field: (envelope: Envelope) =>
       envelope.planned + envelope.starting - envelope.actual,
+    headerClasses,
+    headerStyle,
   },
   {
     name: 'actions',
     align: 'right',
     label: '',
     field: '',
+    headerClasses,
+    headerStyle,
   },
 ];
 
@@ -243,6 +260,12 @@ export default defineComponent({
       pagination,
       formatCurrency,
       envelopesTable,
+      vslotBody: (props: QTableProps) => {
+        return {
+          ...props,
+          color: 'primary',
+        };
+      },
     };
   },
 });
@@ -251,12 +274,7 @@ export default defineComponent({
 <style lang="sass">
 .my-sticky-dynamic
   /* height or max-height is important */
-  max-height: 80vh
-
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th /* bg color is important for th; just specify one */
-    background-color: $dark
+  max-height: 75vh
 
   thead tr th
     position: sticky
