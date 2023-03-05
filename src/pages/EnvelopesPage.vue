@@ -1,103 +1,99 @@
 <template>
   <q-page padding>
-    <div class="q-pa-md">
-      <div class="q-my-md">
-        <q-btn label="Add new envelope" color="primary" @click="addEnvelope" />
-      </div>
-      <q-table
-        class="my-sticky-dynamic"
-        hide-bottom
-        style="background-color: var(--q-dark-page); border-radius: 10px"
-        ref="envelopesTable"
-        :rows="rows"
-        :columns="columns"
-        row-key="name"
-        binary-state-sort
-        v-model:pagination="pagination"
-        virtual-scroll
-        dense
-        flat
-      >
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="name" :props="props">
-              {{ props.row.name }}
-              <q-popup-edit
-                auto-save
-                v-model="props.row.name"
-                @save="(value) => persistEnvelopeByName(value, props.row)"
-                v-slot="scope"
-              >
-                <q-input
-                  tabindex="1"
-                  v-model="scope.value"
-                  dense
-                  autofocus
-                  counter
-                  @keyup.enter="scope.set"
-                  @keyup.tab="scope.set"
-                />
-              </q-popup-edit>
-            </q-td>
-            <q-td key="planned" :props="props">
-              {{ formatCurrency(props.row.planned) }}
-              <q-popup-edit
-                v-model="props.row.planned"
-                @save="
+    <div class="q-mb-md">
+      <q-btn label="Add new envelope" color="primary" @click="addEnvelope" />
+    </div>
+    <q-table
+      class="my-sticky-dynamic"
+      hide-bottom
+      style="background-color: var(--q-dark-page); border-radius: 10px"
+      ref="envelopesTable"
+      :rows="rows"
+      :columns="columns"
+      row-key="name"
+      binary-state-sort
+      v-model:pagination="pagination"
+      virtual-scroll
+      dense
+      flat
+    >
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td key="name" :props="props">
+            {{ props.row.name }}
+            <q-popup-edit
+              auto-save
+              v-model="props.row.name"
+              @save="(value) => persistEnvelopeByName(value, props.row)"
+              v-slot="scope"
+            >
+              <q-input
+                tabindex="1"
+                v-model="scope.value"
+                dense
+                autofocus
+                counter
+                @keyup.enter="scope.set"
+                @keyup.tab="scope.set"
+              />
+            </q-popup-edit>
+          </q-td>
+          <q-td key="planned" :props="props">
+            {{ formatCurrency(props.row.planned) }}
+            <q-popup-edit
+              v-model="props.row.planned"
+              @save="
                   (value: string) =>
                     persistEnvelopeByPlanned(parseFloat(value), props.row)
                 "
-                v-slot="scope"
-              >
-                <q-input
-                  type="number"
-                  v-model="scope.value"
-                  dense
-                  autofocus
-                  tabindex="1"
-                  @keyup.enter="scope.set"
-                  @keyup.tab="scope.set"
-                />
-              </q-popup-edit>
-            </q-td>
-            <q-td key="starting" :props="props">
-              {{ formatCurrency(props.row.starting) }}
-            </q-td>
-            <q-td key="actual" :props="props">
-              {{ formatCurrency(props.row.actual) }}
-            </q-td>
-            <q-td
-              :class="
-                props.row.planned + props.row.starting - props.row.actual < 0
-                  ? 'text-negative'
-                  : props.row.planned +
-                      props.row.starting -
-                      props.row.actual ===
-                    0
-                  ? ''
-                  : 'text-positive'
-              "
-              key="difference"
-              :props="props"
+              v-slot="scope"
             >
-              {{
-                formatCurrency(
-                  props.row.planned + props.row.starting - props.row.actual,
-                )
-              }}
-            </q-td>
-            <q-td key="actions" :props="props">
-              <q-btn
-                @click="deleteEnvelope($event, props.row)"
-                flat
-                rounded
-                icon="delete"
+              <q-input
+                type="number"
+                v-model="scope.value"
+                dense
+                autofocus
+                tabindex="1"
+                @keyup.enter="scope.set"
+                @keyup.tab="scope.set"
               />
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-    </div>
+            </q-popup-edit>
+          </q-td>
+          <q-td key="starting" :props="props">
+            {{ formatCurrency(props.row.starting) }}
+          </q-td>
+          <q-td key="actual" :props="props">
+            {{ formatCurrency(props.row.actual) }}
+          </q-td>
+          <q-td
+            :class="
+              props.row.planned + props.row.starting - props.row.actual < 0
+                ? 'text-negative'
+                : props.row.planned + props.row.starting - props.row.actual ===
+                  0
+                ? ''
+                : 'text-positive'
+            "
+            key="difference"
+            :props="props"
+          >
+            {{
+              formatCurrency(
+                props.row.planned + props.row.starting - props.row.actual,
+              )
+            }}
+          </q-td>
+          <q-td key="actions" :props="props">
+            <q-btn
+              @click="deleteEnvelope($event, props.row)"
+              flat
+              rounded
+              icon="delete"
+            />
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
   </q-page>
 </template>
 
