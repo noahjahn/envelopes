@@ -20,7 +20,7 @@ export default defineComponent({
     const balance: Ref<number> = ref(0);
     const showBalance = ref(false);
 
-    balance.value = (await envelopes.balance().get()).current;
+    balance.value = (await envelopes.balance.get()).current;
 
     return {
       balance,

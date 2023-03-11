@@ -15,12 +15,12 @@ export default defineComponent({
   emits: ['plaid-link-success'],
 
   async setup(props, ctx) {
-    const plaidTokenBody = await envelopes.plaid().linkToken();
+    const plaidTokenBody = await envelopes.plaid.linkToken();
 
     const plaidHandler = window.Plaid.create({
       token: plaidTokenBody.link_token,
       onSuccess: async (publicToken: string, metadata) => {
-        await envelopes.plaid().createItemAccessToken({
+        await envelopes.plaid.createItemAccessToken({
           publicToken,
           bankName: metadata.institution?.name,
         });

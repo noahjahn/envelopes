@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 import routes from './routes';
 import envelopes from 'src/envelopes';
-import { HealthCheckError } from 'src/envelopes/index';
+import { HealthCheckError } from 'src/envelopes/health';
 import { Loading, Notify } from 'quasar';
 /*
  * If not building with SSR mode, you can
@@ -44,7 +44,7 @@ export default route(function (/* { store, ssrContext } */) {
         message: 'This is taking longer than expected...',
       });
       await envelopes.health();
-      if (await envelopes.auth().isLoggedIn()) {
+      if (await envelopes.auth.isLoggedIn()) {
         if (to.fullPath === '/login') {
           next({
             path: '/',
@@ -62,7 +62,7 @@ export default route(function (/* { store, ssrContext } */) {
         return;
       }
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       if (error instanceof HealthCheckError) {
         Notify.create({

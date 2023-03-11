@@ -45,7 +45,7 @@ const routes: RouteRecordRaw[] = [
     component: {
       async beforeRouteEnter(to, from, next) {
         try {
-          await envelopes.auth().logout();
+          await envelopes.auth.logout();
         } catch (error) {
           // TODO: log error
         } finally {

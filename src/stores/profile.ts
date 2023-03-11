@@ -10,7 +10,7 @@ export const useProfileStore = defineStore('profile', () => {
   const hasGravatar = ref(false);
 
   async function update() {
-    const profile = await envelopes.profile().me();
+    const profile = await envelopes.profile.me();
     name.value = profile.name;
     email.value = profile.email;
     avatarUrl.value = gravatar.url(profile.email, {

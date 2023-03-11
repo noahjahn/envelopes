@@ -3,7 +3,7 @@
     <div class="col">
       <q-item class="row" v-for="bank in banks" :key="bank.uuid">
         <q-input
-          v-model="bankNames[bank.uuid]"
+          v-model="bankNames[bank.uuid!]"
           placeholder="Bank has no friendly name"
         ></q-input>
         <q-btn
@@ -11,19 +11,19 @@
           rounded
           icon="warning"
           text-color="warning"
-          @click="($event) => updatePlaidItem($event, bank.uuid)"
+          @click="($event) => updatePlaidItem($event, bank.uuid!)"
         >
           <q-tooltip>{{ bank.updateRequiredReason }}</q-tooltip>
         </q-btn>
         <q-btn
           rounded
           icon="save"
-          @click="($event) => updateBankName($event, bank.uuid)"
+          @click="($event) => updateBankName($event, bank.uuid!)"
         />
         <q-btn
           rounded
           icon="delete"
-          @click="($event) => deleteBank($event, bank.uuid)"
+          @click="($event) => deleteBank($event, bank.uuid!)"
         />
       </q-item>
       <div class="row">
@@ -37,30 +37,28 @@
 import PlaidLink from 'components/PlaidLink.vue';
 import { defineComponent, ref } from 'vue';
 import envelopes from 'src/envelopes';
+import { Bank } from 'src/envelopes/banks';
 
 export default defineComponent({
   name: 'SettingsPage',
   components: { PlaidLink },
   async setup() {
     // INFO: This is an interesting typing scenario
-    const banks = ref<
-      Array<{
-        uuid: string;
-        name: string;
-        updateRequired: boolean;
-        updateRequiredReason: string | null;
-      }>
-    >([]);
+    const banks = ref<Bank[]>([]);
 
     const bankNames = ref<{
       [key: string]: string;
     }>({});
 
     async function listBanks() {
-      banks.value = await envelopes.banks().list();
-      banks.value.forEach((bank) => {
-        bankNames.value[bank.uuid] = bank.name;
-      });
+      banks.value = await envelopes.banks.list();
+      banks.value
+        .filter((bank) => bank.uuid !== undefined)
+        .forEach((bank) => {
+          if (bank.uuid !== undefined) {
+            bankNames.value[bank.uuid] = bank.name;
+          }
+        });
     }
 
     await listBanks();
@@ -69,14 +67,14 @@ export default defineComponent({
       banks,
       bankNames,
       updatePlaidItem: async ($event: Event, bankUuid: string) => {
-        const plaidTokenBody = await envelopes
-          .plaid()
-          .updateItemAccessToken(bankUuid);
+        const plaidTokenBody = await envelopes.plaid.updateItemAccessToken(
+          bankUuid,
+        );
         const plaidHandler = window.Plaid.create({
           token: plaidTokenBody.link_token,
           onSuccess: async (publicToken: string, metadata) => {
             await listBanks();
-            await envelopes.plaid().resolveUpdateRequired(bankUuid);
+            await envelopes.plaid.resolveUpdateRequired(bankUuid);
             await listBanks();
           },
           onExit: (err, metadata) => {
@@ -98,12 +96,12 @@ export default defineComponent({
         plaidHandler.open();
       },
       updateBankName: async ($event: Event, bankUuid: string) => {
-        await envelopes.banks().update(bankUuid, {
+        await envelopes.banks.update(bankUuid, {
           name: bankNames.value[bankUuid],
         });
       },
       deleteBank: async ($event: Event, bankUuid: string) => {
-        await envelopes.banks().delete(bankUuid);
+        await envelopes.banks.delete(bankUuid);
         await listBanks();
       },
       listBanks,

@@ -101,7 +101,7 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { QTableProps } from 'quasar';
 import envelopes from 'src/envelopes';
-import { Envelope } from 'src/envelopes/index';
+import { Envelope } from 'src/envelopes/envelopes';
 import { useQuasar } from 'quasar';
 
 function formatCurrency(amount: number | string) {
@@ -113,6 +113,7 @@ function formatCurrency(amount: number | string) {
   }
   return `${amount.toFixed(2)}`;
 }
+
 const headerClasses = 'bg-dark';
 const headerStyle = `
 font-size: 0.875rem;
@@ -191,7 +192,7 @@ export default defineComponent({
     const rows = ref<Array<Envelope>>([]);
 
     async function listEnvelopes() {
-      rows.value = await envelopes.envelopes().list();
+      rows.value = await envelopes.envelopes.list();
       pagination.value.rowsPerPage = rows.value.length;
     }
 
@@ -216,16 +217,21 @@ export default defineComponent({
         pagination.value.rowsPerPage++;
       },
       persistEnvelopeByName: async (name: string, envelope: Envelope) => {
+        const originalName = envelope.name;
         envelope.name = name;
-        if (envelope.uuid === '') {
-          delete envelope.uuid;
-          envelope.uuid = (await envelopes.envelopes().create(envelope)).uuid;
-          return;
-        }
+        try {
+          if (envelope.uuid === '') {
+            delete envelope.uuid;
+            envelope.uuid = (await envelopes.envelopes.create(envelope)).uuid;
+            return;
+          }
 
-        if (envelope.uuid !== undefined) {
-          await envelopes.envelopes().update(envelope.uuid, envelope);
-          return;
+          if (envelope.uuid !== undefined) {
+            await envelopes.envelopes.update(envelope.uuid, envelope);
+            return;
+          }
+        } catch (error) {
+          envelope.name = originalName;
         }
         throw new Error('Envelope has an invalid uuid');
       },
@@ -239,7 +245,7 @@ export default defineComponent({
         }
         if (envelope.uuid !== undefined) {
           envelope.planned = planned;
-          await envelopes.envelopes().update(envelope.uuid, envelope);
+          await envelopes.envelopes.update(envelope.uuid, envelope);
           await listEnvelopes();
           return;
         }
@@ -247,7 +253,7 @@ export default defineComponent({
       },
       deleteEnvelope: async (event: Event, envelope: Envelope) => {
         if (envelope.uuid !== undefined) {
-          await envelopes.envelopes().delete(envelope.uuid);
+          await envelopes.envelopes.delete(envelope.uuid);
           await listEnvelopes();
           return;
         }
